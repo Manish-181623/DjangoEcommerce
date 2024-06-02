@@ -1,0 +1,12 @@
+version: '3.11'
+
+services:
+  ecommerce:
+    build: .
+    container_name: DJEcontainer
+    volumes:
+      - .:/app
+    ports:
+      - "7500:8000"
+    environment:
+      - DEBUG=1
