@@ -21,6 +21,6 @@ jobs:
 
     - name: Run Docker Compose
       run: docker-compose up -d
-      
-    - name: Run Docker Compose
-      run: docker-compose up -d
+
+    - name: Check container
+      run: docker-compose ps
