@@ -20,6 +20,9 @@ jobs:
       uses: docker/setup-buildx-action@v2
 
     - name: Build and start Docker Compose services
-      run: |
-        docker-compose up -d
-        docker-compose logs -f
+      run: docker-compose up -d
+
+    - name: Check Container
+      run: docker ps
+
+
