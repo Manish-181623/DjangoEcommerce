@@ -1,29 +1,41 @@
-name: Workflow using GitHub Action
+name: Workflow
 
 on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v2.3.0
-      with:
-        projectBaseDir: .
-        args: >
-          -Dsonar.projectKey=Django_Ecommerce 
+    - name: Create SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Connect, update repository, and run SonarQube scan
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /home/inspiringlab/inspiringlab_project/Django_test/DjangoEcommerce
+          pwd
+          git branch
+          git pull origin master
+          echo "Successfully performed the assigned operation"
           
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
-        
+
+          # Run SonarQube scan
+          sonar-scanner \
+            -Dsonar.projectKey=Django_project \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://63.142.252.233:9000 \
+            -Dsonar.login=sqp_e3ab32db7532b577fd9c667fe453f36407a6271a
+
+          echo "SonarQube scan completed"
+        EOF
