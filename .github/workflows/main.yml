@@ -34,7 +34,7 @@ jobs:
           sonar-scanner \
             -Dsonar.projectKey=Django_project \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://63.142.252.233:9000 \
+            -Dsonar.host.url=${{ secrets.SONAR_URL }} \
             -Dsonar.login=sqp_e3ab32db7532b577fd9c667fe453f36407a6271a
 
           echo "SonarQube scan completed"
